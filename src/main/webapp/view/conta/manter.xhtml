@@ -1,0 +1,78 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <f:metadata>
+    <o:viewParam name="id" value="#{manterContaBean.conta}" />
+  </f:metadata>
+
+  <ui:define name="titulo">Cadastrar Conta</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="formDados">
+      <p:growl />
+
+      <h2>
+        <h:outputText value="Nova Conta" rendered="#{empty manterContaBean.conta.id}" />
+        <h:outputText value="Editar Conta" rendered="#{not empty manterContaBean.conta.id}" />
+      </h2>
+
+      <p:fieldset legend="Dados da Conta">
+        <h:panelGrid columns="2">
+          <p:outputLabel />
+          <h:inputHidden>
+            <f:validator validatorId="agenciaENumero" />
+          </h:inputHidden>
+
+          <p:outputLabel value="ID" for="id" rendered="#{not empty manterContaBean.conta.id}" />
+          <p:inputText id="id" value="#{manterContaBean.conta.id}" readonly="true" disabled="true"
+            rendered="#{not empty manterContaBean.conta.id}" style="width:50px" />
+
+          <p:outputLabel value="Titular" for="titular" />
+          <p:inputText id="titular" value="#{manterContaBean.conta.titular}" maxlength="45" required="true"
+            style="width:280px">
+            <f:validator validatorId="comecaComMaiuscula" />
+          </p:inputText>
+
+          <p:outputLabel value="Banco" for="banco" />
+          <p:selectOneMenu value="#{manterContaBean.conta.banco}" id="banco" required="true">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{manterContaBean.bancos}" var="banco" itemValue="#{banco}"
+              itemLabel="#{banco.descricao}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Agência" for="agencia" />
+          <p:inputText id="agencia" value="#{manterContaBean.conta.agencia}" maxlength="15" />
+
+          <h:outputLabel value="N° da Conta" for="nConta" />
+          <p:inputText id="nConta" value="#{manterContaBean.conta.numero}" maxlength="20" />
+        </h:panelGrid>
+
+        <br />
+
+        <h:panelGrid columns="2">
+          <p:commandButton id="s" value="Salvar" icon="ui-icon-check" action="#{manterContaBean.salva}"
+            rendered="#{manterContaBean.conta.id == null}" update=":formDados">
+            <p:confirm header="Inclusão da Conta" message="Confirma a inclusão da conta" icon="ui-icon-alert" />
+          </p:commandButton>
+
+          <p:commandButton id="a" value="Alterar" icon="ui-icon-check" action="#{manterContaBean.salva}"
+            rendered="#{manterContaBean.conta.id != null}" update=":formDados">
+            <p:confirm header="Alterar Conta" message="Confirma alteração da conta" icon="ui-icon-alert" />
+          </p:commandButton>
+
+          <p:commandButton value="Voltar" action="/view/conta/listar?faces-redirect=true" immediate="true" />
+        </h:panelGrid>
+      </p:fieldset>
+    </h:form>
+
+    <h:form>
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

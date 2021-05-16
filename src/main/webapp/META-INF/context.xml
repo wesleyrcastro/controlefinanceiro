@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+	<!-- disables storage of sessions across restarts -->
+	<Manager pathname="" />
+	<Resource name="BeanManager" auth="Container"
+		type="javax.enterprise.inject.spi.BeanManager" factory="org.jboss.weld.resources.ManagerObjectFactory" />
+		<!-- Uncomment to enable injection into Servlets, Servlet Listeners and Filters in Tomcat -->
+        <!-- <Listener className="org.jboss.weld.environment.tomcat.WeldLifecycleListener"/>-->
+		
+    <Resource auth="Container"
+          	  driverClass="com.mysql.jdbc.Driver"
+              maxPoolSize="20" 
+              minPoolSize="5"
+              acquireIncrement="5"
+              idleConnectionTestPeriod="180"
+              maxIdleTime="1000"
+              name="jdbc/ControleFinanceiroDB"  
+              user="root" 
+              password="" 
+              factory="org.apache.naming.factory.BeanFactory"
+              type="com.mchange.v2.c3p0.ComboPooledDataSource"
+              jdbcUrl="jdbc:mysql://localhost/controlefinanceiro" />
+              
+</Context>
+
+<!-- 			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://mysql.comercialmecnetcastro.com.br/comercialmecne" /> -->
+<!-- 			<property name="javax.persistence.jdbc.user" value="comercialmecne" /> -->
+<!-- 			<property name="javax.persistence.jdbc.password" value="mirella850420" /> -->

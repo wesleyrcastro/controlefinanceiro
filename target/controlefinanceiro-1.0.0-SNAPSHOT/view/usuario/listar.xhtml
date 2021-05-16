@@ -1,0 +1,80 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <f:metadata>
+    <f:viewAction action="#{listarUsuarioBean.listaTodos}" />
+  </f:metadata>
+
+  <ui:define name="titulo">Consultar Usuário</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="formDado">
+      <p:growl />
+      <h2>Pesquisa Usuário</h2>
+      <p:fieldset>
+        <h:panelGrid columns="4">
+          <p:outputLabel value="Nome:" for="nome" />
+          <p:inputText id="nome" value="#{listarUsuarioBean.usuarioExiste}" style="width:305px" />
+
+          <p:commandButton value="Pesquisar" icon="ui-icon-search" action="#{listarUsuarioBean.pesquisaUsuario}"
+            update=":formDado :formLista" />
+          <p:commandButton value="Novo" action="/view/usuario/manter?faces-redirect=true" immediate="true" />
+        </h:panelGrid>
+      </p:fieldset>
+    </h:form>
+    <br />
+    
+    <h:form id="formImprimir">
+      <h:panelGroup >
+       <h2>Listagem de Usuários</h2>
+        <p:commandButton value="Desbloquear Usuário" action="/view/loginBloqueado/listar?faces-redirect=true" immediate="true" />
+      </h:panelGroup>
+    </h:form>
+    
+    <h:form id="formLista">
+      <p:growl />
+      <p:dataTable value="#{listarUsuarioBean.usuarios}" var="usuario" paginator="true" rows="10"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{usuario.id}" paginatorPosition="bottom"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhuma usuário cadastrada">
+
+        <p:column headerText="Cargo" style="text-align: center; width: 140px">
+          <h:outputText value="#{usuario.cargo}" />
+        </p:column>
+
+        <p:column headerText="Nome" style="width: 180px">
+          <h:outputText value="#{usuario.nome}" />
+        </p:column>
+
+        <p:column headerText="E-mail" style="width: 180px">
+          <h:outputText value="#{usuario.email}" />
+        </p:column>
+
+        <p:column headerText="Login" style="width: 140px">
+          <h:outputText value="#{usuario.login}" />
+        </p:column>
+
+        <p:column style="text-align: center; width: 50px">
+          <p:button icon="ui-icon-pencil" title="Editar" outcome="/view/usuario/manter">
+            <f:param name="id" value="#{usuario.id}" />
+          </p:button>
+
+          <p:commandButton icon="ui-icon-trash" title="Excluir" process="@this" update=":formLista"
+            action="#{listarUsuarioBean.excluir}">
+            <f:setPropertyActionListener value="#{usuario}" target="#{listarUsuarioBean.usuarioSelecionado}" />
+            <p:confirm header="Exclusão do Usuário" message="Deseja excluir este usuário?" icon="ui-icon-alert" />
+          </p:commandButton>
+        </p:column>
+      </p:dataTable>
+
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

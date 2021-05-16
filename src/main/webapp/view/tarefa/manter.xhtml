@@ -1,0 +1,88 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <f:metadata>
+    <o:viewParam name="id" value="#{manterTarefaBean.tarefa}"/>
+    <f:event listener="#{manterTarefaBean.inicializa}" type="preRenderView" />
+  </f:metadata>
+
+  <ui:define name="titulo">Cadastrar Tarefa</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="frmDado">
+      <p:growl />
+
+      <h2>
+        <h:outputText value="Nova Tarefa" rendered="#{empty manterTarefaBean.tarefa.id}" />
+        <h:outputText value="Editar Tarefa" rendered="#{not empty manterTarefaBean.tarefa.id}" />
+      </h2>
+
+      <p:fieldset legend="Dados da Tarefa">
+        <h:panelGrid columns="2">
+        <p:outputLabel value="ID" for="id" rendered="#{not empty manterTarefaBean.tarefa.id}" />
+          <p:inputText id="id" value="#{manterTarefaBean.tarefa.id}" readonly="true" disabled="true"
+            rendered="#{not empty manterTarefaBean.tarefa.id}" style="width:50px" />
+        
+          <p:outputLabel value="Conta" for="conta" />
+          <p:selectOneMenu id="conta" value="#{manterTarefaBean.tarefa.conta}" required="true">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{manterTarefaBean.listaContasParaCombo}" var="conta" itemValue="#{conta}"
+              itemLabel="#{conta.titular} - #{conta.banco.descricao}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Usuário Responsável" for="usuario" />
+    	  <p:inputText id="usuario" value="#{manterTarefaBean.usuario.login}" disabled="true" style="width:315px" />
+
+          <p:outputLabel value="Data Vencimento" for="dataVencimento" />
+          <p:calendar id="dataVencimento" pattern="dd/MM/yyyy" value="#{manterTarefaBean.tarefa.dataVencimento}" locale="pt_BR"
+            effect="explode" effectDuration="slow" required="true" maxlength="10" />
+
+          <p:outputLabel value="Valor" for="valor" />
+          <p:inputText id="valor" value="#{manterTarefaBean.tarefa.valor}" required="true"
+             maxlength="10" onkeyup="apenasNumerosVirgula(this)">
+            
+            <f:convertNumber type="currency" pattern="#,##0.00" currencySymbol="R$" locale="pt_BR" />
+            <p:ajax update="valor" process="valor" event="change" />
+          </p:inputText>
+          
+           <p:outputLabel value="Status" for="status" rendered="#{manterTarefaBean.tarefa.id != null}"/>
+		  <p:selectOneRadio value="#{manterTarefaBean.tarefa.status}" id="status" required="true"
+             rendered="#{manterTarefaBean.tarefa.id != null}">
+            <f:selectItems value="#{manterTarefaBean.status}" var="status" itemValue="#{status}"
+              itemLabel="#{status.descricao}" />
+          </p:selectOneRadio>
+          
+          <p:outputLabel id="descricao" />
+          <p:inputTextarea label="Descrição" counter="descricao" value="#{manterTarefaBean.tarefa.descricao}" rows="4"
+            cols="50" maxlength="120" counterTemplate="{0} Descrição " autoResize="false" required="true" />
+        </h:panelGrid>
+
+        <br />
+
+        <h:panelGrid columns="2">
+          <p:commandButton value="Salvar" action="#{manterTarefaBean.salva}" update=":frmDado" rendered="#{manterTarefaBean.tarefa.id == null}" >
+            <p:confirm header="Inclusão da Tarefa" message="Confirma a inclusão da tarefa?"
+              icon="ui-icon-alert" />
+          </p:commandButton>
+          
+          <p:commandButton value="Conluir Tarefa" action="#{manterTarefaBean.salva}" update=":frmDado" rendered="#{manterTarefaBean.tarefa.id != null}">
+            <p:confirm header="Concluir Tarefa" message="Confirma a conclusão da tarefa?"
+              icon="ui-icon-alert" />
+          </p:commandButton>
+
+          <p:commandButton value="Voltar" action="/view/tarefa/listar?faces-redirect=true" immediate="true" />
+        </h:panelGrid>
+      </p:fieldset>
+    </h:form>
+
+    <h:form>
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

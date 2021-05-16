@@ -1,0 +1,83 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <f:metadata>
+    <f:viewParam name="dummy" />
+    <f:event listener="#{manterMovimentacaoBean.inicializa}" type="preRenderView" />
+  </f:metadata>
+
+  <ui:define name="titulo">Cadastrar Movimentação</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="frmDado">
+      <p:growl />
+
+      <h2>Nova Movimentação</h2>
+
+      <p:fieldset legend="Dados da Movimentação">
+        <h:panelGrid columns="2">
+          <p:outputLabel value="Conta" for="conta" />
+          <p:selectOneMenu id="conta" value="#{manterMovimentacaoBean.movimentacao.conta}" required="true">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{manterMovimentacaoBean.listaContasParaCombo}" var="conta" itemValue="#{conta}"
+              itemLabel="#{conta.titular} - #{conta.banco.descricao}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Categoria" for="categoria" />
+          <p:selectOneMenu id="categoria" value="#{manterMovimentacaoBean.movimentacao.categoria}" required="true">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{manterMovimentacaoBean.categorias}" var="categoria" itemValue="#{categoria}"
+              itemLabel="#{categoria.descricao}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Subcategoria" for="subcategoria" />
+          <p:selectOneMenu id="subcategoria" value="#{manterMovimentacaoBean.movimentacao.subcategoria}" required="true">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{manterMovimentacaoBean.listaSubcategoriasParaCombo}" var="subcategoria"
+              itemValue="#{subcategoria}" itemLabel="#{subcategoria.nome}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Tipo" for="tipoMovimentacao" />
+          <p:selectOneRadio id="tipoMovimentacao" value="#{manterMovimentacaoBean.movimentacao.tipoMovimentacao}"
+            required="true">
+            <f:selectItems value="#{manterMovimentacaoBean.tipoMovimentacoes}" var="tipo" itemValue="#{tipo}"
+              itemLabel="#{tipo.descricao}" />
+          </p:selectOneRadio>
+
+          <p:outputLabel value="Valor:" for="valor" />
+          <p:inputText id="valor" value="#{manterMovimentacaoBean.movimentacao.valor}" required="true"
+            maxlength="10" onkeyup="apenasNumerosVirgula(this)">
+
+            <f:convertNumber type="currency" pattern="#,##0.00" currencySymbol="R$" locale="pt_BR" />
+            <p:ajax update="valor" process="valor" event="change" />
+          </p:inputText>
+
+          <p:outputLabel id="descricao" />
+          <p:inputTextarea counter="descricao" value="#{manterMovimentacaoBean.movimentacao.descricao}" rows="4"
+            cols="50" maxlength="120" counterTemplate="{0} Descrição: " autoResize="false" />
+        </h:panelGrid>
+
+        <br />
+
+        <h:panelGrid columns="2">
+          <p:commandButton value="Salvar" action="#{manterMovimentacaoBean.salva}" update=":frmDado">
+            <p:confirm header="Inclusão da Movimentação" message="Confirma a inclusão da Movimentação?"
+              icon="ui-icon-alert" />
+          </p:commandButton>
+
+          <p:commandButton value="Voltar" action="/view/movimentacao/listar?faces-redirect=true" immediate="true" />
+        </h:panelGrid>
+      </p:fieldset>
+    </h:form>
+
+    <h:form>
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

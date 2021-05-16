@@ -1,0 +1,74 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <f:metadata>
+    <f:viewAction action="#{listarContaBean.listaTodos}" />
+  </f:metadata>
+
+  <ui:define name="titulo">Consultar Conta</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="formDado">
+      <p:growl />
+      <h2>Pesquisa Conta</h2>
+      <p:fieldset >
+        <h:panelGrid columns="4">
+          <p:outputLabel value="Titular:" for="nome" />
+          <p:inputText id="nome" value="#{listarContaBean.titularExiste}" style="width:305px" />
+
+          <p:commandButton value="Pesquisar" icon="ui-icon-search" action="#{listarContaBean.pesquisaTitular}"
+            update=":formDado :formLista" />
+          <p:commandButton value="Novo" action="/view/conta/manter?faces-redirect=true" immediate="true" />
+        </h:panelGrid>
+      </p:fieldset>
+    </h:form>
+    <br />
+    <h:form id="formLista">
+      <p:growl />
+      <h2>Listagem de Contas</h2>
+
+      <p:dataTable value="#{listarContaBean.contas}" var="conta" paginator="true" rows="10"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{conta.id}" paginatorPosition="bottom"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhuma conta cadastrada">
+
+        <p:column headerText="Titular" sortBy="#{conta.titular}" style="width: 180px">
+          <h:outputText value="#{conta.titular}" />
+        </p:column>
+
+        <p:column headerText="Banco" style="width: 150px">
+          <h:outputText value="#{conta.banco.descricao}" style="width: 140px" />
+        </p:column>
+
+        <p:column headerText="Agência" style="text-align: center; width: 140px">
+          <h:outputText value="#{conta.agencia}" />
+        </p:column>
+
+        <p:column headerText="N° da Conta" style="text-align: center; width: 140px">
+          <h:outputText value="#{conta.numero}" />
+        </p:column>
+
+        <p:column style="text-align: center; width: 50px">
+          <p:button icon="ui-icon-pencil" title="Editar" outcome="/view/conta/manter">
+            <f:param name="id" value="#{conta.id}" />
+          </p:button>
+
+          <p:commandButton icon="ui-icon-trash" title="Excluir" process="@this" update=":formLista"
+            action="#{listarContaBean.excluir}">
+            <f:setPropertyActionListener value="#{conta}" target="#{listarContaBean.contaSelecionada}" />
+            <p:confirm header="Exclusão da Conta" message="Deseja excluir esta conta?" icon="ui-icon-alert" />
+          </p:commandButton>
+        </p:column>
+      </p:dataTable>
+
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

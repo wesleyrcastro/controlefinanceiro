@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <ui:define name="titulo">Login</ui:define>
+
+  <ui:define name="corpo">
+    <div id="login-dialog">
+      <div id="login">Login no Sistema</div>
+      <h:form id="form">
+        <p:growl autoUpdate="true" />
+        <p:focus context="form" />
+
+        <h:panelGrid columns="2" styleClass="grid-login">
+          <p:outputLabel value="Login" for="login" />
+          <p:inputText id="login" value="#{manterLoginBean.usuario.login}" required="true"
+            requiredMessage="Login obrigatório" maxlength="50" style="width:220px" />
+
+          <p:outputLabel value="Senha" for="senha" />
+          <p:password id="senha" value="#{manterLoginBean.usuario.senha}" required="true"
+            requiredMessage="Senha obrigatório" maxlength="25" style="width:220px" />
+
+          <p:commandButton value="Acessar" action="#{manterLoginBean.efetuaLogin}" ajax="false" />
+        </h:panelGrid>
+      </h:form>
+    </div>
+  </ui:define>
+</ui:composition>

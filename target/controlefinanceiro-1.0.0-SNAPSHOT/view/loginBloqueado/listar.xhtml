@@ -1,0 +1,51 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <f:metadata>
+    <f:viewAction action="#{listaLoginBloqueadoBean.listaTodos}" />
+  </f:metadata>
+
+  <ui:define name="titulo">Listagem de Usuários Bloqueados</ui:define>
+
+  <ui:define name="corpo">
+    <h2>Listagem de Usuários Bloqueados</h2>
+    <h:form id="frmBloqueados">
+      <p:growl redisplay="false" />
+      <p:dataTable value="#{listaLoginBloqueadoBean.loginsBloqueados}" var="usuarioBloqueado" paginator="true" rows="5"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{usuarioBloqueado.id}" paginatorPosition="bottom"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhum usuário bloqueado">
+
+        <p:column headerText="Nome" sortBy="#{usuarioBloqueado.usuario}" style="width: 200px">
+          <h:outputText value="#{usuarioBloqueado.usuario}" />
+        </p:column>
+
+        <p:column headerText="Data/Hora" sortBy="#{usuarioBloqueado.data}" style="text-align: center; width: 200px">
+          <h:outputText value="#{usuarioBloqueado.data.time}">
+            <f:convertDateTime pattern="dd/MM/yyyy - HH:mm:ss" locale="pt,BR" timeZone="America/Sao_Paulo" />
+          </h:outputText>
+        </p:column>
+
+        <p:column style="text-align: center; width: 20px">
+          <div align="center">
+            <p:commandButton icon="ui-icon-trash" title="Excluir" process="@this" update=":frmBloqueados"
+              action="#{listaLoginBloqueadoBean.excluir}">
+              <f:setPropertyActionListener value="#{usuarioBloqueado}"
+                target="#{listaLoginBloqueadoBean.loginBloqueadoSelecionado}" />
+              <p:confirm header="Desbloquear Usuário" message="Deseja desbloquear este Usuário?" icon="ui-icon-alert" />
+            </p:commandButton>
+          </div>
+        </p:column>
+      </p:dataTable>
+
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

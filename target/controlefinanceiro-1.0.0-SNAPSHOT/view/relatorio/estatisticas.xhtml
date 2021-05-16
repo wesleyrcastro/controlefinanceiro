@@ -1,0 +1,49 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <ui:define name="titulo">Estatísticas com Hibernate</ui:define>
+
+  <ui:define name="corpo">
+    <br />
+    <h:form>
+      <p:commandButton action="#{estatisticasBean.gera}" value="Gerar estatísticas" ajax="false" />
+    </h:form>
+    <p:separator style="margin-top: 15px" />
+
+    <p:outputLabel value="EntityManagers abertas: #{estatisticasBean.estatisticas.sessionOpenCount }" />
+    <br />
+    <p:outputLabel value="EntityManagers fechadas: #{estatisticasBean.estatisticas.sessionCloseCount }" />
+    <br />
+    <p:outputLabel value="Query Cache Hit: #{estatisticasBean.estatisticas.queryCacheHitCount }" />
+    <br />
+    <p:outputLabel value="Query Cache Miss: #{estatisticasBean.estatisticas.queryCacheMissCount }" />
+    <br />
+    <p:outputLabel value="Query Cache Put: #{estatisticasBean.estatisticas.queryCachePutCount }" />
+    <br />
+    <p:outputLabel value="Second Level Cache Hit: #{estatisticasBean.estatisticas.secondLevelCacheHitCount }" />
+    <br />
+    <p:outputLabel value="Second Level Cache Miss: #{estatisticasBean.estatisticas.secondLevelCacheMissCount }" />
+    <br />
+    <p:outputLabel value="Second Level Cache Put: #{estatisticasBean.estatisticas.secondLevelCachePutCount }" />
+    <br />
+    <p:outputLabel value="Query Execution Count: #{estatisticasBean.estatisticas.queryExecutionCount }" />
+    <br />
+    <p:outputLabel value="Tempo da query mais lenta: #{estatisticasBean.estatisticas.queryExecutionMaxTime} ms" />
+    <br />
+    <p:outputLabel value="Query mais lenta: #{estatisticasBean.estatisticas.queryExecutionMaxTimeQueryString}" />
+    <br />
+    <p:outputLabel value="Query com collections - fetch:  #{estatisticasBean.estatisticas.collectionFetchCount}" />
+    <br />
+    <p:outputLabel value="Crud - Insert:  #{estatisticasBean.estatisticas.entityInsertCount}" />
+    <br />
+    <p:outputLabel value="Crud - Update:  #{estatisticasBean.estatisticas.entityUpdateCount}" />
+    <br />
+    <p:outputLabel value="Crud - Delete:  #{estatisticasBean.estatisticas.entityDeleteCount}" />
+    <br />
+    <p:outputLabel value="Crud - Load:  #{estatisticasBean.estatisticas.entityLoadCount}" />
+    <br />
+    <p:outputLabel value="Crud - Fetch:  #{estatisticasBean.estatisticas.entityFetchCount}" />
+    <br />
+  </ui:define>
+</ui:composition>

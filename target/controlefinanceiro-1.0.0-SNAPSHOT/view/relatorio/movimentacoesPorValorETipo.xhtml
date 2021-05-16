@@ -1,0 +1,94 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <ui:define name="titulo">Movimentações Por Valor e Tipo</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="frmDado">
+      <p:growl />
+      <h2>Filtro por Valor Menor ou Igual ao Digitado</h2>
+      <p:fieldset>
+        <h:panelGrid columns="2">
+          <p:outputLabel value="Conta:" for="conta" />
+          <p:selectOneMenu id="conta" value="#{movimentacoesPorValorETipoBean.conta}" required="true"
+            requiredMessage="Conta obrigatório">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{listarContaBean.listaContasParaCombo}" var="conta" itemValue="#{conta}"
+              itemLabel="#{conta.titular} / #{conta.banco.descricao}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Valor: " for="valor" />
+          <p:inputText id="valor" value="#{movimentacoesPorValorETipoBean.valor}" required="true"
+            requiredMessage="Valor obrigatório" onkeyup="apenasNumerosVirgula(this)">
+
+            <f:convertNumber type="currency" pattern="#,##0.00" currencySymbol="R$" locale="pt_BR" />
+            <p:ajax update="valor" process="valor" event="change" />
+          </p:inputText>
+
+          <p:outputLabel value="Tipo:" for="tipoMovimentacao" />
+          <p:selectOneRadio id="tipoMovimentacao" value="#{movimentacoesPorValorETipoBean.tipoMovimentacao}"
+            required="true" requiredMessage="Tipo obrigatório">
+            <f:selectItems value="#{manterMovimentacaoBean.tipoMovimentacoes}" var="tipo" itemValue="#{tipo}"
+              itemLabel="#{tipo.descricao}" />
+          </p:selectOneRadio>
+        </h:panelGrid>
+        <br />
+        <p:commandButton value="Pesquisar" action="#{movimentacoesPorValorETipoBean.lista}"
+          update=":frmDado :formImprimir :frmLista" />
+      </p:fieldset>
+    </h:form>
+    <br />
+
+    <h:form id="formImprimir" target="_blank">
+      <h:panelGroup rendered="#{movimentacoesPorValorETipoBean.movimentacoes != null}">
+        <h2>Listagem de Movimentações</h2>
+        <p:commandButton value="Imprimir" actionListener="#{movimentacoesPorValorETipoBean.relatorioPorValorETipo}"
+          ajax="false" />
+      </h:panelGroup>
+    </h:form>
+
+    <h:form id="frmLista">
+      <p:dataTable value="#{movimentacoesPorValorETipoBean.movimentacoes}" var="movimentacao" paginator="true" rows="10"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{movimentacao.id}" paginatorPosition="bottom"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhum registro" rendered="#{movimentacoesPorValorETipoBean.movimentacoes != null}">
+
+        <p:column headerText="Conta" style="width: 200px">
+          <h:outputText value="#{movimentacao.conta.titular} / #{movimentacao.conta.banco.descricao}" />
+        </p:column>
+
+        <p:column headerText="Categoria" style="text-align: center; width: 80px">
+          <h:outputText value="#{movimentacao.categoria.descricao}" />
+        </p:column>
+
+        <p:column headerText="Subcategoria" style="width: 130px">
+          <h:outputText value="#{movimentacao.subcategoria.nome}" />
+        </p:column>
+
+        <p:column headerText="Tipo" style="text-align: center; width: 60px">
+          <h:outputText value="#{movimentacao.tipoMovimentacao.descricao}" />
+        </p:column>
+
+        <p:column headerText="Data" style="text-align: center; width: 80px" sortBy="#{movimentacao.data}">
+          <h:outputText value="#{movimentacao.data.time}" onchange="PF('carsTable').filter()">
+            <f:convertDateTime pattern="dd/MM/yyyy" />
+          </h:outputText>
+        </p:column>
+
+        <p:column headerText="Valor" style="width: 70px" sortBy="#{movimentacao.valor}">
+          <div align="right">
+            <h:outputText value="#{movimentacao.valor}">
+              <f:convertNumber type="currency" pattern="R$ #,##0.00" currencySymbol="R$" locale="pt_BR" />
+            </h:outputText>
+          </div>
+        </p:column>
+
+        <p:column headerText="Descrição" style="width: 150px">
+          <h:outputText value="#{movimentacao.descricao}" />
+        </p:column>
+      </p:dataTable>
+    </h:form>
+  </ui:define>
+</ui:composition>

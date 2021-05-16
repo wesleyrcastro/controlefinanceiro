@@ -1,0 +1,94 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <ui:define name="titulo">Consultar Movimentação</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="formDado">
+      <p:growl />
+      <h2>Pesquisa Movimentação</h2>
+      <p:fieldset>
+        <h:panelGrid columns="2">
+          <p:outputLabel value="Subcategoria:" for="subcategoria" />
+          <p:inputText id="subcategoria" value="#{listarMovimentacaoBean.filtro.subcategoria}" style="width:305px" />
+
+          <p:outputLabel value="Data de Criação:" />
+          <h:panelGroup>
+            <p:calendar pattern="dd/MM/yyyy" value="#{listarMovimentacaoBean.filtro.dataDe}" />
+	    			a
+	    	<p:calendar pattern="dd/MM/yyyy" value="#{listarMovimentacaoBean.filtro.dataAte}" />
+          </h:panelGroup>
+        </h:panelGrid>
+        <br />
+        <p:commandButton value="Pesquisar" icon="ui-icon-search" update=":formLista" process=":formDado :formLista" />
+        <p:commandButton value="Novo" action="/view/movimentacao/manter?faces-redirect=true" immediate="true" />
+      </p:fieldset>
+    </h:form>
+    <br />
+    <h:form id="formLista">
+      <p:growl />
+      <h2>Listagem de Movimentações</h2>
+
+      <p:dataTable value="#{listarMovimentacaoBean.dataModelMovimentacoes}" var="movimentacao" paginator="true"
+        rows="10" lazy="true"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{movimentacao.id}" paginatorPosition="bottom"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhuma movimentacao cadastrada">
+
+
+        <p:column headerText="Conta" style="width: 200px">
+          <h:outputText value="#{movimentacao.conta.titular} / #{movimentacao.conta.banco.descricao}" />
+        </p:column>
+
+        <p:column headerText="Categoria" style="text-align: center; width: 80px">
+          <h:outputText value="#{movimentacao.categoria.descricao}" />
+        </p:column>
+
+        <p:column headerText="Subcategoria" style="width: 130px">
+          <h:outputText value="#{movimentacao.subcategoria.nome}" />
+        </p:column>
+
+        <p:column headerText="Tipo" style="text-align: center; width: 60px">
+          <h:outputText value="#{movimentacao.tipoMovimentacao.descricao}" />
+        </p:column>
+
+        <p:column headerText="Data" style="text-align: center; width: 80px" sortBy="#{movimentacao.data}">
+          <h:outputText value="#{movimentacao.data}">
+            <f:convertDateTime pattern="dd/MM/yyyy" />
+          </h:outputText>
+        </p:column>
+
+        <p:column headerText="Valor" style="width: 70px" sortBy="#{movimentacao.valor}">
+          <div align="right">
+            <h:outputText value="#{movimentacao.valor}">
+              <f:convertNumber type="currency" pattern="R$ #,##0.00" currencySymbol="R$" locale="pt_BR" />
+            </h:outputText>
+          </div>
+        </p:column>
+
+        <p:column headerText="Descrição" style="width: 150px">
+          <h:outputText value="#{movimentacao.descricao}" />
+        </p:column>
+
+        <p:column style="text-align: center; width: 40px">
+          <p:commandButton icon="ui-icon-trash" title="Excluir" process="@this" update=":formLista"
+            action="#{listarMovimentacaoBean.excluir}">
+            <f:setPropertyActionListener value="#{movimentacao}"
+              target="#{listarMovimentacaoBean.movimentacaoSelecionada}" />
+            <p:confirm header="Exclusão da Movimentacao" message="Deseja excluir esta movimentacao?"
+              icon="ui-icon-alert" />
+          </p:commandButton>
+        </p:column>
+      </p:dataTable>
+
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

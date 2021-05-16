@@ -1,0 +1,118 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <ui:define name="titulo">Movimentações da Conta com Filtro Dinâmico</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="frmDado">
+      <p:growl />
+      <h2>Movimentações da Conta com Filtro Dinâmico</h2>
+      <p:fieldset>
+        <h:panelGrid columns="8">
+          <p:outputLabel value="Conta:" for="conta" />
+          <p:outputLabel />
+          <p:outputLabel />
+          <p:outputLabel />
+          <p:outputLabel />
+          <p:outputLabel />
+          <p:selectOneMenu id="conta" value="#{pesquisaMovimentacoesBean.conta}">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{listarContaBean.listaContasParaCombo}" var="conta" itemValue="#{conta}"
+              itemLabel="#{conta.titular} / #{conta.banco.descricao}" />
+          </p:selectOneMenu>
+        </h:panelGrid>
+        <h:panelGrid columns="4">
+          <p:outputLabel value="Categoria:" for="categoria" />
+          <p:selectOneMenu id="categoria" value="#{pesquisaMovimentacoesBean.categoria}">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{pesquisaMovimentacoesBean.categorias}" var="categoria" itemValue="#{categoria}"
+              itemLabel="#{categoria.nome}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Tipo:" for="tipoMovimentacao" />
+          <p:selectOneMenu id="tipoMovimentacao" value="#{pesquisaMovimentacoesBean.tipoMovimentacao}">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{manterMovimentacaoBean.tipoMovimentacoes}" var="tipo" itemValue="#{tipo}"
+              itemLabel="#{tipo.descricao}" />
+          </p:selectOneMenu>
+
+          <h:outputLabel value="Mês:" for="data" />
+          <p:selectOneMenu id="data" value="#{pesquisaMovimentacoesBean.mes}">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{pesquisaMovimentacoesBean.meses}" var="a" itemValue="#{a}"
+              itemLabel="#{a.descricao}" />
+          </p:selectOneMenu>
+
+          <h:outputLabel value="Ano:" for="ano" />
+          <p:selectOneMenu id="ano" value="#{pesquisaMovimentacoesBean.ano}">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{pesquisaMovimentacoesBean.anosMovimentacao}" />
+          </p:selectOneMenu>
+
+        </h:panelGrid>
+        <br />
+        <p:commandButton value="Pesquisar" action="#{pesquisaMovimentacoesBean.pesquisa}"
+          update=":frmDado :formImprimir :frmLista" />
+      </p:fieldset>
+    </h:form>
+    <br />
+
+    <h:form id="formImprimir" target="_blank">
+      <h:panelGroup rendered="#{pesquisaMovimentacoesBean.movimentacoes != null}">
+        <h2>Listagem de Movimentações</h2>
+        <p:commandButton value="Imprimir" actionListener="#{pesquisaMovimentacoesBean.relatorioPorContaComFiltro}"
+          ajax="false" />
+      </h:panelGroup>
+    </h:form>
+
+    <h:form id="frmLista">
+      <p:dataTable value="#{pesquisaMovimentacoesBean.movimentacoes}" var="movimentacao" paginator="true" rows="10"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{movimentacao.id}" paginatorPosition="bottom"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhum registro" rendered="#{pesquisaMovimentacoesBean.movimentacoes != null}">
+
+        <p:column headerText="Conta" style="width: 200px">
+          <h:outputText value="#{movimentacao.conta.titular} / #{movimentacao.conta.banco.descricao}" />
+        </p:column>
+
+        <p:column headerText="Categoria" style="text-align: center; width: 80px">
+          <h:outputText value="#{movimentacao.categoria.descricao}" />
+        </p:column>
+
+        <p:column headerText="Subcategoria" style="width: 130px">
+          <h:outputText value="#{movimentacao.subcategoria.nome}" />
+        </p:column>
+
+        <p:column headerText="Tipo" style="text-align: center; width: 60px">
+          <h:outputText value="#{movimentacao.tipoMovimentacao.descricao}" />
+        </p:column>
+
+        <p:column headerText="Data" style="text-align: center; width: 80px" sortBy="#{movimentacao.data}">
+          <h:outputText value="#{movimentacao.data.time}" onchange="PF('carsTable').filter()">
+            <f:convertDateTime pattern="dd/MM/yyyy" />
+          </h:outputText>
+        </p:column>
+
+        <p:column headerText="Valor" style="width: 70px" sortBy="#{movimentacao.valor}">
+          <div align="right">
+            <h:outputText value="#{movimentacao.valor}">
+              <f:convertNumber pattern="R$ #,##0.00" />
+            </h:outputText>
+
+            <f:facet name="footer">Total: 
+                          <h:outputText value="#{pesquisaMovimentacoesBean.soma}">
+                <f:convertNumber type="currency" pattern="R$ #,##0.00" currencySymbol="R$" locale="pt_BR" />
+              </h:outputText>
+            </f:facet>
+          </div>
+        </p:column>
+
+        <p:column headerText="Descrição" style="width: 150px">
+          <h:outputText value="#{movimentacao.descricao}" />
+        </p:column>
+      </p:dataTable>
+    </h:form>
+  </ui:define>
+</ui:composition>

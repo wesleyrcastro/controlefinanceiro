@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+<h:head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title><ui:insert name="titulo">Sistema - Mec Net Castro</ui:insert></title>
+  <h:outputStylesheet library="css" name="estilo.css" />
+  <h:outputScript library="js" name="funcoes.js" />
+</h:head>
+
+<h:body>
+
+  <p:ajaxStatus styleClass="ajax-status">
+    <f:facet name="start">
+      <h:graphicImage library="images" name="loading.gif" />
+    </f:facet>
+    <f:facet name="complete">
+      <h:outputText value="" />
+    </f:facet>
+  </p:ajaxStatus>
+
+  <header>
+    <h:graphicImage library="images" name="logo.png" />
+
+    <div id="usuarioLogado">
+      <h:form rendered="#{usuarioLogado.logado}">
+          Olá! #{usuarioLogado.usuario.login}
+          <p:commandLink value="[Sair]" action="#{manterLoginBean.logout}"/>
+      </h:form>
+    </div>
+  </header>
+
+  <h:form id="conteudo">
+    <p:menubar rendered="#{usuarioLogado.logado}">
+      <p:submenu label="Cadastros">
+        <p:menuitem value="Conta" action="/view/conta/manter?faces-redirect=true" rendered="#{usuarioLogado.controleAcesso}"/>
+        <p:menuitem value="Movimentação" action="/view/movimentacao/manter?faces-redirect=true" />
+        <p:menuitem value="Tarefa" action="/view/tarefa/manter?faces-redirect=true" rendered="#{usuarioLogado.controleAcesso}"/>
+        <p:menuitem value="Usuário" action="/view/usuario/manter?faces-redirect=true" rendered="#{usuarioLogado.controleAcesso}"/>
+      </p:submenu>
+
+      <p:submenu label="Consultas">
+        <p:menuitem value="Conta" action="/view/conta/listar?faces-redirect=true" rendered="#{usuarioLogado.controleAcesso}"/>
+        <p:menuitem value="Movimentação" action="/view/movimentacao/listar?faces-redirect=true" />
+        <p:menuitem value="Tarefa" action="/view/tarefa/listar?faces-redirect=true" rendered="#{usuarioLogado.controleAcesso}"/>
+        <p:menuitem value="Usuário" action="/view/usuario/listar?faces-redirect=true" rendered="#{usuarioLogado.controleAcesso}"/>
+      </p:submenu>
+
+      <p:submenu label="Relatórios">
+        <p:menuitem value="Dinâmico" action="/view/relatorio/pesquisaMovimentacoes?faces-redirect=true" />
+        <p:menuitem value="Valor Por Mês/Ano" action="/view/relatorio/mesesComMovimentacao?faces-redirect=true" />
+        <p:menuitem value="Valor e Tipo" action="/view/relatorio/movimentacoesPorValorETipo?faces-redirect=true" />
+      </p:submenu>
+    </p:menubar>
+  </h:form>
+
+  <div id="conteudo">
+    <ui:insert name="corpo" />
+  </div>
+
+  <p:separator style="margin-top: 20px" />
+
+  <footer>Sistema - Mec Net Castro</footer>
+  
+</h:body>
+</html>

@@ -1,0 +1,75 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+  <ui:define name="titulo">Total Movimentado Por Mês</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="frmDado">
+      <p:growl />
+      <h2>(R$) Total Movimentado Por Mês</h2>
+      <p:fieldset>
+        <h:panelGrid columns="2">
+          <p:outputLabel value="Conta:" for="conta" />
+          <p:selectOneMenu id="conta" value="#{mesesComMovimentacaoBean.conta}" required="true"
+            requiredMessage="Conta obrigatório">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{listarContaBean.listaContasParaCombo}" var="conta" itemValue="#{conta}"
+              itemLabel="#{conta.titular} / #{conta.banco.descricao}" />
+          </p:selectOneMenu>
+
+          <p:outputLabel value="Tipo:" for="tipoMovimentacao" />
+          <p:selectOneRadio id="tipoMovimentacao" value="#{mesesComMovimentacaoBean.tipoMovimentacao}" required="true"
+            requiredMessage="Tipo obrigatório">
+            <f:selectItems value="#{manterMovimentacaoBean.tipoMovimentacoes}" var="tipo" itemValue="#{tipo}"
+              itemLabel="#{tipo.descricao}" />
+          </p:selectOneRadio>
+
+          <p:outputLabel value="Ano:" for="ano" />
+          <p:selectOneMenu id="ano" value="#{mesesComMovimentacaoBean.ano}" required="true"
+            requiredMessage="Ano obrigatório">
+            <f:selectItem itemLabel="-- Selecione --" />
+            <f:selectItems value="#{mesesComMovimentacaoBean.anosMovimentacao}" />
+          </p:selectOneMenu>
+
+        </h:panelGrid>
+        <br />
+        <p:commandButton value="Pesquisar" action="#{mesesComMovimentacaoBean.lista}"
+          update=":frmDado :formImprimir :frmLista" />
+      </p:fieldset>
+    </h:form>
+    <br />
+    <h:form id="formImprimir" target="_blank">
+      <h:panelGroup rendered="#{mesesComMovimentacaoBean.valoresPorMeses != null}">
+        <h2>Listagem de Movimentações</h2>
+        <p:commandButton value="Imprimir" actionListener="#{mesesComMovimentacaoBean.relatorioMesesComMovimentacao}"
+          ajax="false" />
+      </h:panelGroup>
+    </h:form>
+
+    <h:form id="frmLista">
+      <p:dataTable value="#{mesesComMovimentacaoBean.valoresPorMeses}" var="movimentacao" paginator="true" rows="5"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{movimentacao}" paginatorPosition="bottom"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhum registro" rendered="#{mesesComMovimentacaoBean.valoresPorMeses != null}">
+
+        <p:column headerText="Mês / Ano" style="text-align: center;">
+          <h:outputText value="#{movimentacao.mes} / #{movimentacao.ano}" />
+        </p:column>
+
+        <p:column headerText="Valor" style="text-align: center;">
+          <h:outputText value="#{movimentacao.valor}">
+            <f:convertNumber type="currency" pattern="R$ #,##0.00" currencySymbol="R$" locale="pt_BR" />
+          </h:outputText>
+
+          <f:facet name="footer">Total: 
+            <h:outputText value="#{mesesComMovimentacaoBean.soma}">
+              <f:convertNumber type="currency" pattern="R$ #,##0.00" currencySymbol="R$" locale="pt_BR" />
+            </h:outputText>
+          </f:facet>
+        </p:column>
+      </p:dataTable>
+    </h:form>
+  </ui:define>
+</ui:composition>

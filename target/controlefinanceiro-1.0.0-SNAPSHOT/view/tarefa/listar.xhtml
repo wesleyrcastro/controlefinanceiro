@@ -1,0 +1,123 @@
+<ui:composition template="/WEB-INF/template/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+  
+  <f:metadata>
+    <f:viewAction action="#{listarTarefaBean.listaTodos}" />
+  </f:metadata>
+
+  <ui:define name="titulo">Consultar Tarefa do Mês</ui:define>
+
+  <ui:define name="corpo">
+    <h:form id="formDado">
+      <p:growl />
+      <h2>Pesquisa Tarefa do Mês</h2>
+      <p:fieldset>
+        <h:panelGrid columns="2">
+          <p:outputLabel value="Titular da Conta:" for="conta" />
+          <p:inputText id="conta" value="#{listarTarefaBean.titular}" style="width:305px" />
+
+          <p:outputLabel value="Data de Inclusão:" />
+          <h:panelGroup>
+            <p:calendar pattern="dd/MM/yyyy" value="#{listarTarefaBean.dataInclusaoDe}" />
+	    			a
+	    	<p:calendar pattern="dd/MM/yyyy" value="#{listarTarefaBean.dataInclusaoAte}" />
+          </h:panelGroup>
+
+          <p:outputLabel value="Data de Vencimento:" />
+          <h:panelGroup>
+            <p:calendar pattern="dd/MM/yyyy" value="#{listarTarefaBean.dataVencimentoDe}" />
+                    a
+        <p:calendar pattern="dd/MM/yyyy" value="#{listarTarefaBean.dataVencimentoAte}" />
+          </h:panelGroup>
+        </h:panelGrid>
+        <br />
+        <p:commandButton id="botaoPesquisa" value="Pesquisar" icon="ui-icon-search" action="#{listarTarefaBean.pesquisar}" update=":formDado :formImprimir :formLista" />
+        <p:commandButton value="Novo" action="/view/tarefa/manter?faces-redirect=true" immediate="true" />
+      </p:fieldset>
+    </h:form>
+    <br />
+    
+    <h:form id="formImprimir" target="_blank">
+      <h:panelGroup rendered="#{listarTarefaBean.tarefas != null}">
+        <h2>Listagem de Tarefas</h2>
+        <p:commandButton value="Imprimir" actionListener="#{listarTarefaBean.relatorioDeTarefas}"
+          ajax="false" />
+      </h:panelGroup>
+    </h:form>
+    
+    <h:form id="formLista">
+      <p:growl />
+
+      <p:dataTable value="#{listarTarefaBean.tarefas}" var="tarefa" paginator="true" rows="30" lazy="true"
+        paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+        rowKey="#{tarefa.id}" paginatorPosition="bottom" rowStyleClass="#{tarefa.status == 'PENDENTE' ? 'aberto' : 'fechado'}"
+        currentPageReportTemplate="  {startRecord} a {endRecord} no total de {totalRecords} - Página: {currentPage} / {totalPages} "
+        emptyMessage="Nenhuma tarefa cadastrada">
+
+
+        <p:column headerText="Conta" style="width: 150px">
+          <h:outputText value="#{tarefa.conta.titular} / #{tarefa.conta.banco.descricao}" />
+        </p:column>
+
+        <p:column headerText="Usuário Responsável" style="width: 120px">
+          <h:outputText value="#{tarefa.usuario.login}" />
+        </p:column>
+
+        <p:column headerText="Data Inclusão" style="text-align: center; width: 90px" sortBy="#{tarefa.dataInclusao}">
+          <h:outputText value="#{tarefa.dataInclusao}">
+            <f:convertDateTime pattern="dd/MM/yyyy" />
+          </h:outputText>
+        </p:column>
+
+        <p:column headerText="Data Vencimento" style="text-align: center; width: 90px" sortBy="#{tarefa.dataVencimento}">
+          <h:outputText value="#{tarefa.dataVencimento}">
+            <f:convertDateTime pattern="dd/MM/yyyy" />
+          </h:outputText>
+        </p:column>
+
+        <p:column headerText="Valor" style="width: 80px" sortBy="#{tarefa.valor}">
+          <div align="right">
+            <h:outputText value="#{tarefa.valor}">
+              <f:convertNumber type="currency" pattern="R$ #,##0.00" currencySymbol="R$" locale="pt_BR" />
+            </h:outputText>
+            
+            <f:facet name="footer">Total: 
+            <h:outputText value="#{listarTarefaBean.soma}">
+              <f:convertNumber type="currency" pattern="R$ #,##0.00" currencySymbol="R$" locale="pt_BR" />
+            </h:outputText>
+          </f:facet>
+          </div>
+        </p:column>
+
+        <p:column headerText="Status" style="text-align: center; width: 70px">
+          <h:outputText value="#{tarefa.status.descricao}" />
+        </p:column>
+
+        <p:column headerText="Descrição" style="width: 150px">
+          <h:outputText value="#{tarefa.descricao}" />
+        </p:column>
+
+        <p:column style="text-align: center; width: 70px">
+          <p:button icon="ui-icon-pencil" title="Editar / Concluir" outcome="/view/tarefa/manter" 
+           rendered="#{tarefa.podeSerExecutadaPor(usuarioLogado.usuario)}" disabled="#{tarefa.status == 'CONCLUIDO'}">
+            <f:param name="id" value="#{tarefa.id}" />
+          </p:button>
+
+          <p:commandButton icon="ui-icon-trash" title="Excluir" process="@this" update=":formLista" disabled="#{tarefa.status == 'CONCLUIDO'}"
+            action="#{listarTarefaBean.excluir}" rendered="#{tarefa.podeSerExecutadaPor(usuarioLogado.usuario)}">
+            <f:setPropertyActionListener value="#{tarefa}" target="#{listarTarefaBean.tarefaSelecionada}" />
+            <p:confirm header="Exclusão da Tarefa" message="Deseja excluir esta tarefa?" icon="ui-icon-alert" />
+          </p:commandButton>
+        </p:column>
+      </p:dataTable>
+
+      <p:confirmDialog global="true" showEffect="fade" hideEffect="drop">
+        <div align="center">
+          <p:commandButton value="SIM" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+          <p:commandButton value="NÃO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </div>
+      </p:confirmDialog>
+    </h:form>
+  </ui:define>
+</ui:composition>

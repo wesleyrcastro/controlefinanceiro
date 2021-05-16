@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+	<persistence-unit name="financasPU" transaction-type="RESOURCE_LOCAL">
+
+		<non-jta-data-source>java:comp/env/jdbc/ControleFinanceiroDB</non-jta-data-source>
+
+		<properties>
+			<!-- JPA não deve usar bean validation -->
+			<property name="javax.persistence.validation.mode" value="none" />
+
+			<!-- Configuracoes especificas do Hibernate -->
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
+
+			<!-- Abilita a auditoria das entidades usando hibernate -->
+			<property name="post-insert" value="org.hibernate.jpa.event.internal.core.JpaPostInsertEventListener, org.hibernate.envers.event.spi.EnversListener" />
+			<property name="post-update" value="org.hibernate.jpa.event.internal.core.JpaPostUpdateEventListener, org.hibernate.envers.event.spi.EnversListener" />
+			<property name="post-delete" value="org.hibernate.jpa.event.internal.core.JpaPostDeleteEventListener, org.hibernate.envers.event.spi.EnversListener" />
+		</properties>
+
+	</persistence-unit>
+</persistence>
